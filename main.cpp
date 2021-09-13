@@ -6,7 +6,8 @@
 #define SIZE 32767
 #define BSIZE MAX_PATH
 using namespace std;
-// Функция для пункта 2.
+
+// Р¤СѓРЅРєС†РёСЏ РґР»СЏ РїСѓРЅРєС‚Р° 2.
 void Freq_meas()
 {
     double ans;
@@ -14,70 +15,76 @@ void Freq_meas()
     QueryPerformanceCounter(&cr1);
     QueryPerformanceFrequency(&fr);
     QueryPerformanceCounter(&cr2);
-    printf("\n2.1) Частота ЦП:     %u  Гц\n", fr);
+    printf("\n2.1) Р§Р°СЃС‚РѕС‚Р° Р¦Рџ:     %u  Р“С†\n", fr);
     ans = (1000000*(double(cr2.QuadPart) - double(cr1.QuadPart)) / double(fr.QuadPart));
-    cout << "2.2) Измерено за:   " << ans  << "  мкс \n";
+    cout << "2.2) РР·РјРµСЂРµРЅРѕ Р·Р°:   " << ans  << "  РјРєСЃ \n";
 }
 
 int main()
 {
     setlocale(LC_ALL, "Russian");
-    //1.1) Определение версии операционной системы.
+
+    //1.1) РћРїСЂРµРґРµР»РµРЅРёРµ РІРµСЂСЃРёРё РѕРїРµСЂР°С†РёРѕРЅРЅРѕР№ СЃРёСЃС‚РµРјС‹.
     OSVERSIONINFO OS_ver;
     OS_ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
     GetVersionEx(&OS_ver);
-    printf("1.1) Версия ОС: Windows %i.%i\n", OS_ver.dwMajorVersion, OS_ver.dwMinorVersion);
-    //1.2) Определение системного каталога.
+    printf("1.1) Р’РµСЂСЃРёСЏ РћРЎ: Windows %i.%i\n", OS_ver.dwMajorVersion, OS_ver.dwMinorVersion);
+
+    //1.2) РћРїСЂРµРґРµР»РµРЅРёРµ СЃРёСЃС‚РµРјРЅРѕРіРѕ РєР°С‚Р°Р»РѕРіР°.
     TCHAR bf[SIZE];
     GetSystemDirectory(bf, SIZE);
-    printf("\n1.2) Системная директория: %s \n", bf);
-    //1.3) Определение названия компьютера и псевдонима текущего пользователя.
+    printf("\n1.2) РЎРёСЃС‚РµРјРЅР°СЏ РґРёСЂРµРєС‚РѕСЂРёСЏ: %s \n", bf);
+
+    //1.3) РћРїСЂРµРґРµР»РµРЅРёРµ РЅР°Р·РІР°РЅРёСЏ РєРѕРјРїСЊСЋС‚РµСЂР° Рё РїСЃРµРІРґРѕРЅРёРјР° С‚РµРєСѓС‰РµРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
     DWORD sz = sizeof(bf);
     GetComputerName(bf,&sz);
-    printf("\n1.3) Имя компьютера: %s \n", bf);
+    printf("\n1.3) РРјСЏ РєРѕРјРїСЊСЋС‚РµСЂР°: %s \n", bf);
     GetUserName(bf,&sz);
-    printf("     Имя пользователя: %s \n", bf);
-    //1.4) Характеристики томов компьютера.
+    printf("     РРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ: %s \n", bf);
+
+    //1.4) РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё С‚РѕРјРѕРІ РєРѕРјРїСЊСЋС‚РµСЂР°.
     char T_name[MAX_PATH],T_label[MAX_PATH];
     ULARGE_INTEGER T_free,T_volume;
     int T_count = 0;
     HANDLE T_find = FindFirstVolume(T_name, BSIZE);
-    printf("\n1.4) Характеристики логических томов:");
+    printf("\n1.4) РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё Р»РѕРіРёС‡РµСЃРєРёС… С‚РѕРјРѕРІ:");
     do
+    {
+        T_count++;
+        cout << "\n     РРјСЏ " << T_count << "-РіРѕ С‚РѕРјР°: ";
+        printf(T_name);
+        GetVolumePathNamesForVolumeName(T_name, T_label, sz, &sz);
+        printf("\n     РњРµС‚РєР° С‚РѕРјР°: ");
+        printf("%s",T_label);
+        if (GetDiskFreeSpaceEx(T_name, &T_free, &T_volume, NULL)!= 0)
         {
-            T_count++;
-            cout << "\n     Имя " << T_count << "-го тома: ";
-            printf(T_name);
-            GetVolumePathNamesForVolumeName(T_name, T_label, sz, &sz);
-            printf("\n     Метка тома: ");
-            printf("%s",T_label);
-            if (GetDiskFreeSpaceEx(T_name, &T_free, &T_volume, NULL)!= 0)
-            {
-                cout << "\n     Общий объем: " << T_volume.QuadPart << "\n     Свободное пространство: " << T_free.QuadPart;
-            }
-            else
-            {
-                printf("\n     Нет информации об объеме.");
-            }
+            cout << "\n     РћР±С‰РёР№ РѕР±СЉРµРј: " << T_volume.QuadPart << "\n     РЎРІРѕР±РѕРґРЅРѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ: " << T_free.QuadPart;
         }
+        else
+        {
+            printf("\n     РќРµС‚ РёРЅС„РѕСЂРјР°С†РёРё РѕР± РѕР±СЉРµРјРµ.");
+        }
+    }
     while (FindNextVolume(T_find, T_name, BSIZE));
     FindVolumeClose(T_find);
-    //1.5) Cписок программ, запускаемых при старте системы.
+
+    //1.5) CРїРёСЃРѕРє РїСЂРѕРіСЂР°РјРј, Р·Р°РїСѓСЃРєР°РµРјС‹С… РїСЂРё СЃС‚Р°СЂС‚Рµ СЃРёСЃС‚РµРјС‹.
     HKEY as_find;
     TCHAR as_name[SIZE], as_path[SIZE];
     DWORD as_count = 0, as_val = sizeof(as_name);
     sz = SIZE;
-    printf("\n\n1.5) Список программ, запускаемых при старте системы:\n");
+    printf("\n\n1.5) РЎРїРёСЃРѕРє РїСЂРѕРіСЂР°РјРј, Р·Р°РїСѓСЃРєР°РµРјС‹С… РїСЂРё СЃС‚Р°СЂС‚Рµ СЃРёСЃС‚РµРјС‹:\n");
     RegOpenKeyEx(HKEY_CURRENT_USER, "Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, KEY_ALL_ACCESS, &as_find);
     while (RegEnumValue(as_find, as_count, as_name, &as_val, NULL, REG_NONE, NULL, NULL) == ERROR_SUCCESS)
-        {
-            as_val = sizeof(as_name);
-            RegQueryValueEx(as_find, as_name, NULL, REG_NONE, (LPBYTE)as_path, &sz);
-            printf("     %i) %s: %s\n", as_count + 1, as_name, as_path);
-            as_count++;
-        }
+    {
+        as_val = sizeof(as_name);
+        RegQueryValueEx(as_find, as_name, NULL, REG_NONE, (LPBYTE)as_path, &sz);
+        printf("     %i) %s: %s\n", as_count + 1, as_name, as_path);
+        as_count++;
+    }
     RegCloseKey(as_find);
-    //2) Измерение производительности ЦП.
+
+    //2) РР·РјРµСЂРµРЅРёРµ РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЊРЅРѕСЃС‚Рё Р¦Рџ.
     Freq_meas();
     return 0;
 }
